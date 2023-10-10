@@ -6,7 +6,7 @@ const userSchema = new Schema({
      // userSchema we are creating so instance of schema we have created here.
                                        //  3 type of validation controller,react.js , while storing at db.
 fullName:{
-type:String,
+type:'String',
 required:[true,'Name is required'],
 minLength:[5,'Name  must be at least of 5 char'],
 lowercase:true,
@@ -14,7 +14,7 @@ trim:true, // start and ending space trim
 
 },
 email:{
-type:String,
+type:'String',
 required:[true,'email is required'],
 lowercase:true,
 trim:true,
@@ -22,19 +22,19 @@ unique:true,
 match:[/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/],
 },
 password:{
-    type:String,
+    type:'String',
     required:[true,'password is required'],
     minLength:[8,'pass must be at least 8'],
     select:false
 },avatar:{
     public_id:{ //we will access through this
-        type:String
+        type:'String'
     },secure_url:{
-        type:String
+        type:'String'
     }
 },
 role:{
-type:String,
+type:'String',
 enum:['USER','ADMIN'],//possible users
 default:'USER' // if nothing given byDefault user.
 },
@@ -43,7 +43,7 @@ forgetPasswordExpiry:Date
 },{
     timestamps:true //gives time  of when  create and update 
 });
-userSchema.pre('save',async function(next){
+userSchema.pre('save',async function(next){ // pre hook in db
 if(!this.isModified('password')){
     return next();
 }
@@ -54,7 +54,7 @@ userSchema.methods={
     generateJWTToken:async function(){
        return await jwt.sign(
             {
-                id:this_id,email:this.email,subscription:this.subscription,role:this.role},
+                id:this._id,email:this.email,subscription:this.subscription,role:this.role},
                 process.env.JWT_SECRET,
 
             
@@ -62,7 +62,7 @@ userSchema.methods={
                 expiresIn:process.env.JWT_EXPIRY,
 
             }
-        )
+        );
     },
     comparePassword:async function(plainTextPassword){
         return await bcrypt.compare(plainTextPassword,this.password)
