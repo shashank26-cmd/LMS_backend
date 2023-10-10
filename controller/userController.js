@@ -148,6 +148,10 @@ const getProfile = async (req, res, next) => {
     }
 };
 
+//1
+// email  > validate in db > generate  new token > send email with new url containing token + save token with expiry in db
+//2
+// get token from url query param > verify token in db > update pass in db
  const forgotPassword = async (req, res, next) => {
     // Extracting email from request body
     const { email } = req.body;
@@ -181,7 +185,7 @@ const getProfile = async (req, res, next) => {
     //   "host"
     // )}/api/v1/user/reset/${resetToken}`;
     const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-  
+  console.log(resetPasswordUrl);
     // We here need to send an email to the user with the token
     const subject = 'Reset Password';
     const message = `You can reset your password by clicking <a href=${resetPasswordUrl} target="_blank">Reset your password</a>\nIf the above link does not work for some reason then copy paste this link in new tab ${resetPasswordUrl}.\n If you have not requested this, kindly ignore.`;
@@ -201,14 +205,9 @@ const getProfile = async (req, res, next) => {
   
       await user.save();
   
-      return next(
-        new AppError(
-          error.message || 'Something went wrong, please try again.',
-          500
-        )
-      );
-    }
-  };
+      return next(new AppError(error.message || 'Something went wrong, please try again.',400))}
+ 
+    };
 
 const resetPassword = async (req, res, next) => {
     const { resetToken } = req.params;
@@ -231,7 +230,7 @@ const resetPassword = async (req, res, next) => {
         await user.save();
         res.status(200).json({
             success: true,
-            message: 'Password changed successfully'
+            message: 'Password Reset successfully'
         });
     } catch (e) {
         return next(new AppError(e.message, 500));
@@ -261,6 +260,59 @@ const changePassword = async (req, res, next) => {
     });
 };
 
+const updateUser =async()=>{
+const { fullName }=req.body;
+const { id }=rq.user.id;
+
+const user= await User.findById(d);
+if(!user){
+  return next(
+    new AppError('User does not exist',400)
+  )
+}
+
+if(req.fullName){
+  user.fullName=fullName;
+}
+if(req.file){
+  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+  try {
+    console.log('starting img upload to cloudinary')
+    const result = await cloudinary.v2.uploader.upload(req.file.path, {
+      folder: 'lms', // Save files in a folder named lms
+      width: 250,
+      height: 250,
+      gravity: 'faces', // This option tells cloudinary to center the image around detected faces (if any) after cropping or resizing the original image
+      crop: 'fill',
+    });
+console.log('image uploaded susccefully')
+    // If success
+    console.log(result);
+    if (result) {
+      // Set the public_id and secure_url in DB
+      user.avatar.public_id = result.public_id;
+      user.avatar.secure_url = result.secure_url;
+
+      // After successful upload remove the file from local storage
+      fs.rm(`uploads/${req.file.filename}`)
+              }
+  } catch (error) {
+    return next(
+      new AppError(error || 'File not uploaded, please try again', 400)
+    );
+  }
+}
+
+// Save the user object
+await user.save();
+
+res.status(200).json({
+  success:true,
+  message:'user details updated successfully'
+})
+}
+
 export {
     register,
     login,
@@ -268,5 +320,6 @@ export {
     getProfile,
     forgotPassword,
     resetPassword,
-    changePassword
+    changePassword,
+    updateUser
 };

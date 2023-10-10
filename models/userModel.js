@@ -31,6 +31,7 @@ password:{
         type:'String'
     },secure_url:{
         type:'String'
+        
     }
 },
 role:{
