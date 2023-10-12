@@ -40,7 +40,11 @@ enum:['USER','ADMIN'],//possible users
 default:'USER' // if nothing given byDefault user.
 },
 forgetPasswordToken:String,
-forgetPasswordExpiry:Date
+forgetPasswordExpiry:Date,
+subscription:{
+    id:String,
+    status:String
+}
 },{
     timestamps:true //gives time  of when  create and update 
 });
@@ -52,10 +56,18 @@ this.password=await bcrypt.hash(this.password,10);
 })
 
 userSchema.methods={
+
+
+    comparePassword:async function(plainTextPassword){
+        return await bcrypt.compare(plainTextPassword,this.password)
+
+    },
+
+
     generateJWTToken:async function(){
        return await jwt.sign(
             {
-                id:this._id,email:this.email,subscription:this.subscription,role:this.role},
+                id:this._id,subscription:this.subscription,role:this.role},
                 process.env.JWT_SECRET,
 
             
@@ -65,10 +77,7 @@ userSchema.methods={
             }
         );
     },
-    comparePassword:async function(plainTextPassword){
-        return await bcrypt.compare(plainTextPassword,this.password)
-
-    },
+    
     generatePasswordResetToken :async function(){ //these function will try to generate dynamic token and expiry
         const resetToken=crypto.randomBytes(20).toString('hex'); // generate random token
 

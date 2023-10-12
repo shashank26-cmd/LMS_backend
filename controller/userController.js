@@ -103,7 +103,7 @@ const login = async (req, res, next) => {
             return next(new AppError('All fields are required', 400));
         }
         const user = await User.findOne({ email }).select('+password');
-        if (!user || !user.comparePassword(password)) {
+        if (!(user && (await user.comparePassword(password)))) {
             return next(new AppError('Email or password does not match', 400));
         }
         const token = await user.generateJWTToken();
@@ -171,7 +171,7 @@ const getProfile = async (req, res, next) => {
   
     // Generating the reset token via the method we have in user model
     const resetToken = await user.generatePasswordResetToken();
-  
+    console.log(resetToken);
     // Saving the forgotPassword* to DB
     await user.save();
   
@@ -181,11 +181,12 @@ const getProfile = async (req, res, next) => {
      * req.get('host') will get the hostname
      * the rest is the route that we will create to verify if token is correct or not
      */
-    // const resetPasswordUrl = `${req.protocol}://${req.get(
+    // const resetPasswordUrl = `${req.protocol}://${req.get( eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MjZiZTQ2OWVjNThkY2Q1ZDI4MGNmMCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjk3MDM3OTM0LCJleHAiOjE2OTcwNDE1MzR9.9UiJGMZ6KdO8eFQV8MXVrZaEDcI5xVkLbdCbKk6a8nA
     //   "host"
     // )}/api/v1/user/reset/${resetToken}`;
     const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
   console.log(resetPasswordUrl);
+  // navigator.clipboard.write(resetPasswordUrl);
     // We here need to send an email to the user with the token
     const subject = 'Reset Password';
     const message = `You can reset your password by clicking <a href=${resetPasswordUrl} target="_blank">Reset your password</a>\nIf the above link does not work for some reason then copy paste this link in new tab ${resetPasswordUrl}.\n If you have not requested this, kindly ignore.`;
@@ -253,6 +254,7 @@ const changePassword = async (req, res, next) => {
     }
     user.password = newPassword;
     await user.save();
+    
     user.password = undefined;
     res.status(200).json({
         success: true,

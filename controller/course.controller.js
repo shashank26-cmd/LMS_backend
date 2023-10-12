@@ -73,9 +73,9 @@ const createCourse = async (req, res, next) => {
         fs.rm(`uploads/${req.file.filename}`);
       } catch (error) {
         // Empty the uploads directory without deleting the uploads directory
-        for (const file of await fs.readdir('uploads/')) {
-          await fs.unlink(path.join('uploads/', file));
-        }
+        // for (const file of await fs.readdir('uploads/')) {
+        //   await fs.unlink(path.join('uploads/', file));
+        // }
   
         // Send the error message
         return next(
@@ -180,6 +180,8 @@ const createCourse = async (req, res, next) => {
     });
   };
 
+
+
   const deleteCourseById = async (req, res, next) => {
     // Extracting id from the request parameters
     const { id } = req.params;
@@ -202,6 +204,8 @@ await Course.findByIdAndDelete(id);
       message: 'Course deleted successfully',
     });
   };
+
+
 
   const addLectureToCourseById = async (req, res, next) => {
     const { title, description } = req.body;
@@ -239,9 +243,9 @@ await Course.findByIdAndDelete(id);
         fs.rm(`uploads/${req.file.filename}`);
       } catch (error) {
         // Empty the uploads directory without deleting the uploads directory
-        for (const file of await fs.readdir('uploads/')) {
-          await fs.unlink(path.join('uploads/', file));
-        }
+        // for (const file of await fs.readdir('uploads/')) {
+        //   await fs.unlink(path.join('uploads/', file));
+        // }
   
         // Send the error message
         return next(
