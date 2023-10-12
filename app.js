@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 import morgan from 'morgan'; // gives info of what user have search or track user info
 import userRoutes from './routes/userRoute.js'
 import courseRoutes from './routes/course.route.js'
+import paymentRoutes from './routes/payment.route.js'
 import errorMiddleware from './middlewars/error.middleware.js';
 config();
 const app=express();
@@ -26,6 +27,8 @@ app.use('/ping',function(req,res){ //testing
 // routes of 3 module ex user etc
 app.use('/api/v1/user',userRoutes); // if something wrong and not return from here and u move to errorMiddleware that means u have really done a mistake
 app.use('/api/v1/courses',courseRoutes);
+app.use('/api/v1/payments',paymentRoutes);
+
 
 
 // koi aur route that does not exist

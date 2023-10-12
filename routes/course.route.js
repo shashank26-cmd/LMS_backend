@@ -11,7 +11,7 @@ import {
 import {
   authorizeRoles,
   isLoggedIn,
-  // authorizeSubscribers
+  authorizeSubscribers
 } from '../middlewars/auth.middleware.js';
 import upload from '../middlewars/multer.middleware.js';
 
@@ -52,19 +52,13 @@ router
 
 router
   .route('/:id')
-  .get(isLoggedIn,getLecturesByCourseId) // Added authorizeSubscribers to check if user is admin or subscribed if not then forbid the access to the lectures
+  .get(isLoggedIn, authorizeSubscribers, getLecturesByCourseId) // Added authorizeSubscribers to check if user is admin or subscribed if not then forbid the access to the lectures
   .post(
     isLoggedIn,
     authorizeRoles('ADMIN'),
     upload.single('lecture'),
     addLectureToCourseById
   )
-  .delete(isLoggedIn,
-    authorizeRoles('ADMIN'),
-    deleteCourseById)
-
-  .put(isLoggedIn,
-    authorizeRoles('ADMIN'),
-    updateCourseById);
+  .put(isLoggedIn, authorizeRoles('ADMIN'), updateCourseById);
 
 export default router;

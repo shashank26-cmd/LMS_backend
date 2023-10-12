@@ -5,12 +5,12 @@ import {
   verifySubscription,
   cancelSubscription,
   allPayments,
-} from '../controllers/payment.controller.js';
+} from '../controller/payment.controller.js';
 import {
   authorizeRoles,
   authorizeSubscribers,
   isLoggedIn,
-} from '../middlewares/auth.middleware.js';
+} from '../middlewars/auth.middleware.js';
 
 const router = Router();
 
