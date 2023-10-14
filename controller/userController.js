@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import AppError from "../utils/error.utils.js";
 import cloudinary from 'cloudinary';
+import path from "path";
 import fs from 'fs/promises';
 import sendEmail from "../utils/sendEmail.js";
 import crypto from 'crypto';
