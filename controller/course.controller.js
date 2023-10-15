@@ -47,8 +47,8 @@ const getLecturesByCourseId=async function(req,res,next){
     createdBy,
     thumbnail :{
       public_id: 'Dummy',
-      secure_url : 'Dummy'
-    }
+      secure_url : 'Dummy',
+    },
     
   });
 
@@ -62,7 +62,12 @@ const getLecturesByCourseId=async function(req,res,next){
   if (req.file) {
     try {
       const result = await cloudinary.v2.uploader.upload(req.file.path, {
-        folder: 'lms', // Save files in a folder named lms
+        folder: 'lms',
+        width: 250,
+        height: 250,
+        gravity: 'faces', // This option tells cloudinary to center the image around detected faces (if any) after cropping or resizing the original image
+        crop: 'fill',
+        // Save files in a folder named lms
       });
 
       // If success
@@ -76,16 +81,13 @@ const getLecturesByCourseId=async function(req,res,next){
       fs.rm(`uploads/${req.file.filename}`);
     } catch (error) {
       // Empty the uploads directory without deleting the uploads directory
-      for (const file of await fs.readdir('uploads/')) {
-        await fs.unlink(path.join('uploads/', file));
-      }
+      // for (const file of await fs.readdir('uploads/')) {
+      //   await fs.unlink(path.join('uploads/', file));
+      // }
 
       // Send the error message
       return next(
-        new AppError(
-          JSON.stringify(error) || 'File not uploaded, please try again',
-          400
-        )
+        new AppError('File not uploaded, please try again',400)
       );
     }
   }
@@ -262,11 +264,7 @@ const lectureData =  {
       }
     }
   
-    course.lectureData.push({
-      title,
-      description,
-      lecture: lectureData,
-    });
+    course.lectures.push(lectureData);
   
     course.numberOfLectures = course.lectures.length;
   

@@ -1,11 +1,11 @@
-import  cloudinary  from 'cloudinary';
+import cloudinary  from 'cloudinary';
 import Razorpay from 'razorpay';
 import app from './app.js';
 import connectionToDB from './config/db.js';
 
 
 // Cloudinary configuration
-cloudinary.config({
+cloudinary.v2.config({
   cloud_name: 'shashankm', 
   api_key: '442858572351394', 
   api_secret: 'CC8E_16jLJSBokJYNdWZbmJMhA4'
