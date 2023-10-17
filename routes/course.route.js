@@ -41,18 +41,18 @@ import upload from '../middlewars/multer.middleware.js';
 // router.delete("/:id", isLoggedIn, authorizeRoles("ADMIN"), deleteCourseById);
 
 // Refactored code
-router.post('/create', isLoggedIn, authorizeRoles('ADMIN'), upload.single('thumbnail'), createCourse);
+// router.post('/create', isLoggedIn, authorizeRoles('ADMIN'), upload.single('thumbnail'), createCourse);
 
 router
   .route('/')
   .get(getAllCourses)
   
-  // .post(
-  //   isLoggedIn,
-  //   authorizeRoles('ADMIN'),
-  //   upload.single('thumbnail'),
-  //   createCourse
-  // )
+  .post(
+    isLoggedIn,
+    authorizeRoles('ADMIN'),
+    upload.single('thumbnail'),
+    createCourse
+  )
   // .delete(isLoggedIn, authorizeRoles('ADMIN'), removeLectureFromCourse);
 
 router
