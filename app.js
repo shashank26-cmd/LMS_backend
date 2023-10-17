@@ -13,9 +13,10 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 app.use(express.urlencoded({extended:true}));
 
 app.use(cors({
-    origin:[process.env.FRONTEND_URL],
-    credentials:true
+    origin: "http://localhost:5173",
+    credentials: true
 }));
+
 
 app.use(cookieParser()); // to ensure setup  of token in cookie so that we can pass cookie
 app.use(morgan('dev'));

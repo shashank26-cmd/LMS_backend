@@ -14,6 +14,7 @@ const cookieOptions = {
 
  const register = async (req, res, next) => {
     // Destructuring the necessary data from req object
+    console.log(req.body)
     const { fullName, email, password } = req.body;
   
     // Check if the data is there or not, if not throw error message
