@@ -10,6 +10,11 @@ import errorMiddleware from './middlewars/error.middleware.js';
 config();
 const app=express();
 app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jaye taki dubara parsing related work na krna pade
+
+
+//express.urlencoded() is used for parsing data in the body of HTTP requests where the data is in the URL-encoded format, which is a common way to send form data in web applications.
+
+//The { extended: true } option indicates that the URL-encoded data should be parsed as an object (with nested objects and arrays) rather than a flat key-value structure. This is useful when working with complex forms.
 app.use(express.urlencoded({extended:true}));
 
 app.use(cors({
