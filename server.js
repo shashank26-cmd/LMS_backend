@@ -5,13 +5,14 @@ import connectionToDB from './config/db.js';
 
 
 // Cloudinary configuration
+<<<<<<< HEAD
 cloudinary.v2.config({
   cloud_name: process.env.Cloud_Name, 
   api_key: process.env.Cloud_Key, 
   api_secret:process.env.Cloud_Secret
+=======
+>>>>>>> 3d113d6eed8ffeef41e2c41d305066ca1e3dbf88
 
-  
-});
 
 
 export const razorpay = new Razorpay({
