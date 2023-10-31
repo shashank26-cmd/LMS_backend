@@ -6,9 +6,9 @@ import connectionToDB from './config/db.js';
 
 // Cloudinary configuration
 cloudinary.v2.config({
-  cloud_name: 'shashankm', 
-  api_key: '442858572351394', 
-  api_secret: 'CC8E_16jLJSBokJYNdWZbmJMhA4'
+  cloud_name: process.env.Cloud_Name, 
+  api_key: process.env.Cloud_Key, 
+  api_secret:process.env.Cloud_Secret
 
   
 });
