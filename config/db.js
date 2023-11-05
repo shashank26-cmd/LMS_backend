@@ -12,6 +12,6 @@ const connectionToDB =async()=>{
 console.log(e);
 process.exit(1);// kill server terminate it.
   }
-}
+} 
 
 export default connectionToDB;
