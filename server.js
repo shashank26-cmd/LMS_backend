@@ -2,6 +2,8 @@ import cloudinary  from 'cloudinary';
 import Razorpay from 'razorpay';
 import app from './app.js';
 import connectionToDB from './config/db.js';
+import {config} from 'dotenv'
+config();
 
 
 // Cloudinary configuration
@@ -18,7 +20,8 @@ cloudinary.v2.config({
 export const razorpay = new Razorpay({
 
 key_id: process.env.RAZORPAY_KEY_ID,
-key_secret:process.env.RAZORPAY_SECRET
+key_secret:process.env.RAZORPAY_SECRET,
+// plan_id:process.env.RAZORPAY_PLAN_ID 
 
 
 })
