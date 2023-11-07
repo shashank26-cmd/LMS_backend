@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   getRazorpayApiKey,
-  buySubscription,
+  buyScription,
   verifySubscription,
   cancelSubscription,
   allPayments,
@@ -14,7 +14,7 @@ import {
 
 const router = Router();
 
-router.route('/subscribe').post(isLoggedIn, buySubscription);
+router.route('/subscribe').post(isLoggedIn, buyScription);
 router.route('/verify').post(isLoggedIn, verifySubscription);
 router
   .route('/unsubscribe')
@@ -23,3 +23,6 @@ router.route('/razorpay-key').get(isLoggedIn, getRazorpayApiKey);
 router.route('/').get(isLoggedIn, authorizeRoles('ADMIN'), allPayments);
 
 export default router;
+
+
+
