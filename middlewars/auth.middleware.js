@@ -10,7 +10,7 @@ const isLoggedIn = async (req, res, next) => {
     console.log('No token found');
     return next(new AppError('Unauthenticated, please login again', 400));
   }
-  next();
+ 
   try {
     const userDetails = await jwt.verify(token, process.env.JWT_SECRET);
 
@@ -20,7 +20,7 @@ const isLoggedIn = async (req, res, next) => {
     console.log('JWT verification failed:', error);
     return next(new AppError('Invalid token or session expired', 401));
   }
-  
+  next();
 
 };
 

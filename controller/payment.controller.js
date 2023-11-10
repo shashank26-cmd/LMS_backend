@@ -22,53 +22,53 @@ const getRazorpayApiKey = async (req, res, next) => {
 
 
 const buyScription = async (req, res, next) => {
-    try {
-        const { id } = req.user;
+  try {
+      const { id } = req.user;
 
-        if (!id) {
-            return next(new AppError('User ID is missing', 400));
-        }
+      if (!id) {
+          return next(new AppError('User ID is missing', 400));
+      }
 
-        const user = await User.findById(id);
+      const user = await User.findById(id);
 
-        if (!user) {
-            return next(new AppError('User is not exist...Please login', 402));
-        }
+      if (!user) {
+          return next(new AppError('User does not exist. Please log in.', 402));
+      }
 
-        if (user.role === 'ADMIN') {
-            return next(new AppError('Admin cannot purchase a subscription', 403));
-        }
+      if (user.role === 'ADMIN') {
+          return next(new AppError('Admin cannot purchase a subscription', 403));
+      }
 
-        if (!process.env.RAZORPAY_PLAN_ID) {
-            return next(new AppError('Razorpay Plan ID is not configured', 504));
-        }
+      if (!process.env.RAZORPAY_PLAN_ID) {
+          return next(new AppError('Razorpay Plan ID is not configured', 500));
+      }
 
-        let subscription;
+      // Assuming you have properly configured Razorpay
+      const subscriptionOptions = {
+          plan_id: process.env.RAZORPAY_PLAN_ID,
+          total_count: 12,
+          // Remove custom_notify to fix the error
+      };
 
-        try {
-            // Check if Razorpay subscription creation fails
-            subscription = await razorpay.subscriptions.create({
-                plan_id: process.env.RAZORPAY_PLAN_ID,
-                custom_notify: 1,
-                total_count: 12
-            });
-        } catch (razorpayError) {
-            return next(new AppError(razorpayError.message, 506));
-        }
+      // Check if Razorpay subscription creation fails
+      const subscription = await razorpay.subscriptions.create(subscriptionOptions);
 
-        user.subscription.id = subscription.id;
-        user.subscription.status = subscription.status;
+      user.subscription.id = subscription.id;
+      user.subscription.status = subscription.status;
 
-        await user.save();
-        res.status(200).json({
-            success: true,
-            message: 'Subscribed Successfully...',
-            subscription_id: subscription.id,
-        });
-    } catch (e) {
-        return next(new AppError(e.message, 503));
-    }
+      await user.save();
+
+      res.status(200).json({
+          success: true,
+          message: 'Subscribed Successfully',
+          subscription_id: subscription.id,
+      });
+  } catch (error) {
+      console.error(error);
+      return next(new AppError(error.message, 500));
+  }
 };
+
 
 
 
