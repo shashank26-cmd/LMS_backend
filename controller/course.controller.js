@@ -129,7 +129,42 @@ const getLecturesByCourseId=async function(req,res,next){
       message: 'Course updated successfully',
     });
   };
-  // const removeLectureFromCourse = async (req, res, next) => {
+  const removeLectureFromCourse = async (req, res, next) => {
+    try {
+        const { courseId, lectureId } = req.query;
+        if (!courseId) {
+            return next(new AppError('Course ID is required', 400));
+        }
+        if (!lectureId) {
+            return next(new AppError('Lecture ID is required', 400));
+        }
+        const course = await Course.findById({ _id: courseId });
+        if (!course) {
+            return next(new AppError('Invalid ID or Course does not exist.', 404));
+        }
+        const lectureIndex = course.lectures.findIndex((lecture) => lecture._id.toString() === lectureId.toString());
+        if (lectureIndex === -1) {
+            return next(new AppError('Lecture does not exist.', 404));
+        }
+
+        await cloudinary.v2.uploader.destroy(
+            course.lectures[lectureIndex].lecture.public_id,
+            {
+                resource_type: 'video',
+            }
+        );
+        course.lectures.splice(lectureIndex, 1);
+        course.numbersOfLectures = course.lectures.length;
+        await course.save();
+        res.status(200).json({
+            success: true,
+            message: 'Course lecture removed successfully',
+        });
+
+    } catch (e) {
+        return next(new AppError(e.message, 500));
+    }
+}
   //   // Grabbing the courseId and lectureId from req.query
   //   const { courseId, lectureId } = req.query;
   
@@ -212,70 +247,54 @@ await Course.findByIdAndDelete(id);
     const { title, description } = req.body;
     const { id } = req.params;
   
-  
     if (!title || !description) {
       return next(new AppError('Title and Description are required', 400));
     }
   
-    const course = await Course.findById(id);
+    try {
+      const course = await Course.findById(id);
   
-    if (!course) {
-      return next(new AppError('Invalid course id or course not found.', 400));
-    }
+      if (!course) {
+        return next(new AppError('Invalid course id or course not found.', 400));
+      }
   
-
-const lectureData =  {
-  title,
-  description,
-  lecture:{}
-}
-
-
-    // Run only if user sends a file
-    if (req.file) {
-      try {
+      const lectureData = {
+        title,
+        description,
+        lecture: {}, // Initialize the lecture object
+      };
+  
+      if (req.file) {
         const result = await cloudinary.v2.uploader.upload(req.file.path, {
-          folder: 'lms', // Save files in a folder named lms
-          
+          folder: 'lms',
+          chunk_size: 5000000000,
+          resource_type: 'video',
         });
   
-        // If success
         if (result) {
-          // Set the public_id and secure_url in array
           lectureData.lecture.public_id = result.public_id;
           lectureData.lecture.secure_url = result.secure_url;
         }
   
-        // After successful upload remove the file from local storage
+        // Remove the file from local storage after successful upload
         fs.rm(`uploads/${req.file.filename}`);
-      } catch (error) {
-        // Empty the uploads directory without deleting the uploads directory
-        // for (const file of await fs.readdir('uploads/')) {
-        //   await fs.unlink(path.join('uploads/', file));
-        // }
-  
-        // Send the error message
-        return next(
-          new AppError(
-            JSON.stringify(error) || 'File not uploaded, please try again',
-            400
-          )
-        );
       }
+  
+      course.lectures.push(lectureData);
+      course.numberOfLectures = course.lectures.length;
+  
+      // Save the course object
+      await course.save();
+  
+      res.status(200).json({
+        success: true,
+        message: 'Course lecture added successfully',
+        course,
+      });
+    } catch (error) {
+      // Handle any other errors
+      return next(new AppError(error.message || 'Internal Server Error', 500));
     }
-  
-    course.lectures.push(lectureData);
-  
-    course.numberOfLectures = course.lectures.length;
-  
-    // Save the course object
-    await course.save();
-  
-    res.status(200).json({
-      success: true,
-      message: 'Course lecture added successfully',
-      course,
-    });
   };
   
   
@@ -285,7 +304,7 @@ export {
     getLecturesByCourseId,
     createCourse,
     updateCourseById,
-    // removeLectureFromCourse,
+    removeLectureFromCourse,
     deleteCourseById,
     addLectureToCourseById
 
