@@ -1,5 +1,6 @@
 import AppError from "../utils/error.utils.js";
 import jwt from 'jsonwebtoken';
+import User from "../models/userModel.js";
 
 const isLoggedIn = async (req, res, next) => {
   const { token } = req.cookies ;
@@ -40,7 +41,10 @@ console.log(authorizeRoles);
 };
 const authorizeSubscribers = async (req, _res, next) => {
   // If user is not admin or does not have an active subscription then error else pass
-  if (req.user.role !== "ADMIN" && req.user.subscription.status !== "active") {
+
+
+  const user=await User.findById(req.user.id)
+  if (user.role !== "ADMIN" && user.subscription.status !== "active") {
     return next(new AppError("Please subscribe to access this route.", 403));
   }
 

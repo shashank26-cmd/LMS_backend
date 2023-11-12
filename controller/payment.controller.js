@@ -20,43 +20,50 @@ const getRazorpayApiKey = async (req, res, next) => {
 }
 
 
+// ... (Other imports and configurations)
+
 const buyScription = async (req, res, next) => {
   try {
       const { id } = req.user;
 
+      // Validate user ID
       if (!id) {
           return next(new AppError('User ID is missing', 400));
       }
 
+      // Find the user
       const user = await User.findById(id);
 
+      // Check if the user exists
       if (!user) {
           return next(new AppError('User does not exist. Please log in.', 402));
       }
 
+      // Check if the user is an admin (optional)
       if (user.role === 'ADMIN') {
           return next(new AppError('Admin cannot purchase a subscription', 403));
       }
 
+      // Check if Razorpay Plan ID is configured
       if (!process.env.RAZORPAY_PLAN_ID) {
           return next(new AppError('Razorpay Plan ID is not configured', 500));
       }
 
-      // Assuming you have properly configured Razorpay
+      // Define subscription options
       const subscriptionOptions = {
           plan_id: process.env.RAZORPAY_PLAN_ID,
           total_count: 12,
-          // Remove custom_notify to fix the error
       };
 
-      // Check if Razorpay subscription creation fails
+      // Create a subscription using Razorpay
       const subscription = await razorpay.subscriptions.create(subscriptionOptions);
 
+      // Update user's subscription details
       user.subscription.id = subscription.id;
       user.subscription.status = subscription.status;
-
       await user.save();
 
+      // Send the response
       res.status(200).json({
           success: true,
           message: 'Subscribed Successfully',
@@ -70,10 +77,14 @@ const buyScription = async (req, res, next) => {
 
 
 
+
+
+
 const verifySubscription = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature } = req.body;
+    console.log("pay_id", razorpay_payment_id, razorpay_subscription_id, razorpay_signature);
 
     const user = await User.findById(id);
 
@@ -82,6 +93,7 @@ const verifySubscription = async (req, res, next) => {
     }
 
     const subscriptionID = user.subscription?.id;
+    console.log(subscriptionID);
 
     if (!subscriptionID) {
       return next(new AppError('User Subscription ID not found.', 402));
@@ -92,7 +104,16 @@ const verifySubscription = async (req, res, next) => {
       .update(`${razorpay_payment_id}|${subscriptionID}`)
       .digest('hex');
 
-    if (generatedSignature !== razorpay_signature) {
+    console.log('Generated Signature:', generatedSignature);
+    console.log('Razorpay Signature:', razorpay_signature);
+
+    // Use a constant-time comparison to prevent timing attacks
+    const signaturesMatch = crypto.timingSafeEqual(
+      Buffer.from(generatedSignature, 'hex'),
+      Buffer.from(razorpay_signature, 'hex')
+    );
+
+    if (!signaturesMatch) {
       return next(new AppError('Payment not verified. Please try again.', 403));
     }
 
@@ -114,6 +135,7 @@ const verifySubscription = async (req, res, next) => {
     return next(new AppError(error.message || 'Internal Server Error', 500));
   }
 };
+
 
 const cancelSubscription =async (req, res, next) => {
     const { id } = req.user;
