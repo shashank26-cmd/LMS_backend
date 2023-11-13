@@ -124,7 +124,7 @@ const login = async (req, res, next) => {
     }
 };
 
-const logout = (req, res) => {
+const logout = (req, res,next) => {
     res.cookie('token', null, {
         secure: true,
         maxAge: 0,
