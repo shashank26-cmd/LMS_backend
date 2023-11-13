@@ -6,6 +6,8 @@ import morgan from 'morgan'; // gives info of what user have search or track use
 import userRoutes from './routes/userRoute.js'
 import courseRoutes from './routes/course.route.js'
 import paymentRoutes from './routes/payment.route.js'
+import miscRoutes from './routes/miscellaneous.js';
+
 import errorMiddleware from './middlewars/error.middleware.js';
 config();
 const app=express();
@@ -34,6 +36,7 @@ app.use('/ping',function(req,res){ //testing
 app.use('/api/v1/user',userRoutes); // if something wrong and not return from here and u move to errorMiddleware that means u have really done a mistake
 app.use('/api/v1/courses',courseRoutes);
 app.use('/api/v1/payments',paymentRoutes);
+app.use('/api/v1',miscRoutes)
 
 
 
