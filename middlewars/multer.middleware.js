@@ -1,11 +1,14 @@
 import path from "path";
 import multer from "multer";
+const __dirname = path.resolve();
 
+const uploadPath = path.join(__dirname,'..','uploads/')
+// console.log(uploadPath)
 const upload = multer({
-  dest: "./../uploads/",
+  dest: uploadPath,
   limits: { fileSize: 80 * 1024 * 1024 }, // 50 mb in size max limit
   storage: multer.diskStorage({
-    destination: "./../uploads/",
+    destination: uploadPath,
     filename: (req, file, cb) => {
       cb(null, file.originalname);
     },
