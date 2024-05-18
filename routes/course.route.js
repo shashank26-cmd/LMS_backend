@@ -16,7 +16,7 @@ import {
   isLoggedIn,
   authorizeSubscribers
 } from '../middlewars/auth.middleware.js';
-import upload from '../middlewars/multer.middleware.js';
+// import upload from '../middlewars/multer.middleware.js';
 
 
 // , isLoggedIn, authorizeRoles("ADMIN", "USER") - middlewares
@@ -50,9 +50,9 @@ router
   .post(
     isLoggedIn,
     authorizeRoles('ADMIN'),
-    upload.single('thumbnail'),
     createCourse
-  )
+  )//    upload.single('thumbnail'),
+
   .delete(isLoggedIn, authorizeRoles('ADMIN'), removeLectureFromCourse);
 
 router
@@ -61,9 +61,9 @@ router
   .post(
     isLoggedIn,
     authorizeRoles('ADMIN'),
-    upload.single('lecture'),
     addLectureToCourseById
-  )
+  )//    upload.single('lecture'),
+
   .put(isLoggedIn, authorizeRoles('ADMIN'), updateCourseById)
   .delete(
     isLoggedIn,
