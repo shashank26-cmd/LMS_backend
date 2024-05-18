@@ -28,7 +28,7 @@ key_secret:process.env.RAZORPAY_SECRET,
 
 
 
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 3000;
 
 
 app.listen(PORT, async () => {
