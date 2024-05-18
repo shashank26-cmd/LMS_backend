@@ -46,7 +46,6 @@ import {
 router
   .route('/')
   .get(getAllCourses)
-  
   .post(
     isLoggedIn,
     authorizeRoles('ADMIN'),
