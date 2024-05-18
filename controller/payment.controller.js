@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { razorpay } from '../server.js'
+import { razorpay } from '../index.js'
 import AppError from "../utils/error.utils.js";
 import User from '../models/userModel.js'
 import Payment from "../models/payment.model.js";
