@@ -20,7 +20,7 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 app.use(express.urlencoded({extended:true}));
 
 app.use(cors({
-    origin:process.env.Base_URL,
+    origin:["https://lms-frontend-blond.vercel.app"],
     methods:["POST","GET"],
     credentials: true
 
