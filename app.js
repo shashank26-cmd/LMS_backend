@@ -19,11 +19,15 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 //The { extended: true } option indicates that the URL-encoded data should be parsed as an object (with nested objects and arrays) rather than a flat key-value structure. This is useful when working with complex forms.
 app.use(express.urlencoded({extended:true}));
 
-app.use(cors({
-    origin: "https://lms-frontend-blond.vercel.app/",
-    credentials: true
-}));
+// app.options('*', cors()); // Enable pre-flight across-the-board
 
+app.use(cors({
+    origin: "https://lms-frontend-4cin0fc91-shashanks-projects-3027ed5d.vercel.app",
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}));
 
 app.use(cookieParser()); // to ensure setup  of token in cookie so that we can pass cookie
 app.use(morgan('dev'));
