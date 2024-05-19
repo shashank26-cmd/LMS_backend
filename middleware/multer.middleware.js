@@ -1,33 +1,31 @@
 import path from "path";
 import multer from "multer";
-const __dirname = path.resolve();
+import { fileURLToPath } from "url";
 
-const uploadPath = path.join(__dirname,'..','uploads/')
-// console.log(uploadPath)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const uploadPath = path.join(__dirname, '..', 'uploads');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname)); // Add a timestamp to the filename
+  },
+});
+
 const upload = multer({
-  dest: uploadPath,
-  limits: { fileSize: 80 * 1024 * 1024 }, // 50 mb in size max limit
-  storage: multer.diskStorage({
-    destination: uploadPath,
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    },
-  }),
+  storage,
+  limits: { fileSize: 80 * 1024 * 1024 }, // 80 MB max size
   fileFilter: (req, file, cb) => {
-    let ext = path.extname(file.originalname);
-
-    if (
-      ext !== ".jpg" &&
-      ext !== ".jpeg" &&
-      ext !== ".webp" &&
-      ext !== ".png" &&
-      ext !== ".mp4"
-    ) {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if ([".jpg", ".jpeg", ".png", ".webp", ".mp4"].includes(ext)) {
+      cb(null, true);
+    } else {
       cb(new Error(`Unsupported file type! ${ext}`), false);
-      return;
     }
-
-    cb(null, true);
   },
 });
 
