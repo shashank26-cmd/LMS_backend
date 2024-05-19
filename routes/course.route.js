@@ -15,8 +15,8 @@ import {
   authorizeRoles,
   isLoggedIn,
   authorizeSubscribers
-} from '../middlewars/auth.middleware.js';
-import upload from '../middlewars/multer.middleware.js';
+} from '../middleware/auth.middleware.js';
+import upload from '../middleware/multer.middleware.js';
 
 
 // , isLoggedIn, authorizeRoles("ADMIN", "USER") - middlewares

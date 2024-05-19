@@ -10,7 +10,7 @@ import {
   authorizeRoles,
   authorizeSubscribers,
   isLoggedIn,
-} from '../middlewars/auth.middleware.js';
+} from '../middleware/auth.middleware.js';
 
 const router = Router();
 

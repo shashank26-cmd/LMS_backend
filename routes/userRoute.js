@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { register,login,logout,getProfile,forgotPassword,resetPassword,changePassword,updateUser } from "../controller/userController.js";
-import { isLoggedIn } from "../middlewars/auth.middleware.js";
-import upload from "../middlewars/multer.middleware.js";
+import { isLoggedIn } from "../middleware/auth.middleware.js";
+import upload from "../middleware/multer.middleware.js";
 const router=Router();
 
 router.post('/register',upload.single("avatar"),register); // , //remove data from avatar convert it  and put it on temprory folder and give path 

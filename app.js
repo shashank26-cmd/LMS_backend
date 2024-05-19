@@ -8,7 +8,7 @@ import courseRoutes from './routes/course.route.js'
 import paymentRoutes from './routes/payment.route.js'
 import miscRoutes from './routes/miscellaneous.js';
 
-import errorMiddleware from './middlewars/error.middleware.js';
+import errorMiddleware from './middleware/error.middleware.js';
 config();
 const app=express();
 app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jaye taki dubara parsing related work na krna pade
