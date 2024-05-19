@@ -31,14 +31,14 @@ key_secret:process.env.RAZORPAY_SECRET,
 const PORT = process.env.PORT || 3000;
 
 
-// app.listen(PORT, async () => {
-//   // Ensure the database is connected before starting the server
-//   try {
-//     await connectionToDB();
-//     console.log(`App is running at http://localhost:${PORT}`);
-//   } catch (error) {
-//     console.error('Error connecting to the database:', error);
-//   }
-// });
+app.listen(PORT, async () => {
+  // Ensure the database is connected before starting the server
+  try {
+    await connectionToDB();
+    console.log(`App is running at http://localhost:${PORT}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
+});
 
 export default app;
