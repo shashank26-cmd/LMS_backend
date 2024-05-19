@@ -20,15 +20,22 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 app.use(express.urlencoded({extended:true}));
 
 // app.options('*', cors()); // Enable pre-flight across-the-board
-
 app.use(cors({
-    origin: "https://lms-frontend-4cin0fc91-shashanks-projects-3027ed5d.vercel.app",
+    origin: "https://lms-frontend-blond.vercel.app", // Correct origin without trailing slash
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: "Content-Type,Authorization",
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200
 }));
 
+// Handle preflight requests
+app.options('*', cors({
+    origin: "https://lms-frontend-blond.vercel.app",
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+    optionsSuccessStatus: 200
+}));
 app.use(cookieParser()); // to ensure setup  of token in cookie so that we can pass cookie
 app.use(morgan('dev'));
 
