@@ -20,14 +20,14 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 app.use(express.urlencoded({extended:true}));
 
 app.use(cors({
-    origin:process.env.Base_URL,
+    origin:process.env.Base_URL, 
     methods:["POST","GET"],
     credentials: true
 
 }));
 
 
-app.use(cookieParser()); // to ensure setup  of token in cookie so that we can pass cookie
+app.use(cookieParser()); 
 app.use(morgan('dev'));
 
 app.use('/ping',function(req,res){ //testing 
