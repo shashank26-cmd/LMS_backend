@@ -19,7 +19,7 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 app.use(express.urlencoded({extended:true}));
 
 app.use(cors({
-    origin:"https://lms-frontend-blond.vercel.app/",
+    origin:"http://localhost:5173",
     credentials: true
 }));
 
