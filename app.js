@@ -18,10 +18,14 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 
 app.use(express.urlencoded({extended:true}));
 
-app.use(cors({
-    origin:"https://lms-frontend-blond.vercel.app/",
+const corsOptions = {
+    origin: 'https://lms-frontend-blond.vercel.app',  // Replace with your specific origin
+    methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization',
     credentials: true
-}));
+  };
+  
+  app.use(cors(corsOptions));
 
 
 
