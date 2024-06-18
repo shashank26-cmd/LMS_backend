@@ -16,24 +16,10 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 //express.urlencoded() is used for parsing data in the body of HTTP requests where the data is in the URL-encoded format, which is a common way to send form data in web applications.
 
 app.use(express.urlencoded({ extended: true }));
-const corsOptions = {
-  origin: "https://lms-frontend-blond.vercel.app", // Replace with your specific origin
-  methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization",
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-app.options("*", (req, res) => {
-    console.log("Handling preflight request");
-    res.header("Access-Control-Allow-Origin", "https://lms-frontend-blond.vercel.app");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.sendStatus(200);
-  });
+app.use(cors({
+  origin:"http://localhost:5173",
+  credentials: true
+}));
   
 
 app.use(cookieParser());
