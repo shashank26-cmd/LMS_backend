@@ -17,7 +17,9 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin:"http://localhost:5173",
+  // origin:"http://localhost:5173",
+  origin:"https://lms-frontend-kappa.vercel.app/",
+
   credentials: true
 }));
   
