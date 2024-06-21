@@ -18,7 +18,7 @@ export const razorpay = new Razorpay({
   // plan_id:process.env.RAZORPAY_PLAN_ID
 });
 
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
   // Ensure the database is connected before starting the server

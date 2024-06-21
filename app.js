@@ -16,12 +16,13 @@ app.use(express.json()); // joh bhi req mai body ati hai woh parse hoke agee jay
 //express.urlencoded() is used for parsing data in the body of HTTP requests where the data is in the URL-encoded format, which is a common way to send form data in web applications.
 
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  // origin:"http://localhost:5173",
-  origin:"https://lms-frontend-kappa.vercel.app",
-  credentials: true
-}));
-
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+// origin:"https://lms-frontend-kappa.vercel.app",
 
 app.use(cookieParser());
 app.use(morgan("dev"));

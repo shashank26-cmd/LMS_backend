@@ -84,6 +84,7 @@ const verifySubscription = async (req, res, next) => {
   try {
     const { id } = req.user;
     const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature } = req.body;
+    console.log("this is verify cosole",req.body)
 
     const user = await User.findById(id);
 
