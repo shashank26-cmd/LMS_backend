@@ -43,7 +43,6 @@ const register = async (req, res, next) => {
       },
     });
 
-    // If user not created send message response
     if (!user) {
       return next(
         new AppError("User registration failed, please try again later", 400)
@@ -66,7 +65,6 @@ const register = async (req, res, next) => {
         // If success
         console.log(result);
         if (result) {
-          // Set the public_id and secure_url in DB
           user.avatar.public_id = result.public_id;
           user.avatar.secure_url = result.secure_url;
 

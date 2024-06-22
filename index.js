@@ -7,11 +7,10 @@ config();
 
 // Cloudinary configuration
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name:"shashankm",
+  api_key:"442858572351394",
+  api_secret:"CC8E_16jLJSBokJYNdWZbmJMhA4",
 });
-
 
 export const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
