@@ -282,7 +282,7 @@ const changePassword = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   const { fullName } = req.body;
   const { id } = req.params;
-
+console.log(id);
   const user = await User.findById(id);
   if (!user) {
     return next(new AppError("User does not exist", 400));
@@ -316,7 +316,7 @@ const updateUser = async (req, res, next) => {
       }
     } catch (error) {
       return next(
-        new AppError(error || "File not uploaded, please try again", 400)
+        new AppError(error || "File not uploaded, please try again", 401)
       );
     }
   }
