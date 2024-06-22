@@ -285,7 +285,7 @@ const updateUser = async (req, res, next) => {
 console.log( "this is checking console ",id,fullName);
   const user = await User.findById(id);
   if (!user) {
-    return next(new AppError("User does not exist", 400));
+    return next(new AppError("User does not exist", 402));
   }
 
   if (fullName) {
