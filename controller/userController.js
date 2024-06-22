@@ -50,35 +50,45 @@ const register = async (req, res, next) => {
       );
     }
 
-    // Run only if user sends a file
-    console.log("FILE details >", JSON.stringify(req.file));
-    if (req.file) {
-      try {
-        console.log("starting img upload to cloudinary");
-        const result = await cloudinary.v2.uploader.upload(req.file.path, {
-          folder: "lms", // Save files in a folder named lms
-          width: 250,
-          height: 250,
-          gravity: "faces", // This option tells cloudinary to center the image around detected faces (if any) after cropping or resizing the original image
-          crop: "fill",
-        });
-        console.log("image uploaded susccefully");
-        // If success
-        console.log(result);
-        if (result) {
-          // Set the public_id and secure_url in DB
+    // Configure Cloudinary
+    cloudinary.v2.config({
+  cloud_name: process.env.Cloud_Name,
+  api_key: process.env.Cloud_Key,
+  api_secret: process.env.Cloud_Secret,
+});
+     const uploadImage = async (req, res, next) => {
+      console.log("FILE details >", JSON.stringify(req.file));
+      if (req.file) {
+        try {
+          console.log("starting img upload to cloudinary");
+          const result = await cloudinary.v2.uploader.upload(req.file.path, {
+            folder: "lms",
+            width: 250,
+            height: 250,
+            gravity: "faces",
+            crop: "fill",
+          });
+          console.log("image uploaded successfully");
+          console.log(result);
+
+          // Set the public_id and secure_url in DB (ensure 'user' is defined and accessible)
           user.avatar.public_id = result.public_id;
           user.avatar.secure_url = result.secure_url;
 
-          // After successful upload remove the file from local storage
-          fs.rm(`uploads/${req.file.filename}`);
+          // Remove the file from local storage
+          await fs.rm(`uploads/${req.file.filename}`);
+        } catch (error) {
+          return next(
+            new AppError(
+              error.message || "File not uploaded, please try again",
+              400
+            )
+          );
         }
-      } catch (error) {
-        return next(
-          new AppError(error || "File not uploaded, please try again", 400)
-        );
+      } else {
+        return next(new AppError("No file provided", 400));
       }
-    }
+    };
 
     // Save the user object
     await user.save();
@@ -101,7 +111,7 @@ const register = async (req, res, next) => {
   } catch (err) {
     return res.status(500).send({ error: err.message });
   }
-}
+};
 
 const login = async (req, res, next) => {
   try {
@@ -131,20 +141,19 @@ const login = async (req, res, next) => {
 
 const logout = (req, res, next) => {
   try {
-      res.cookie('token', null, {
-          secure: true,
-          maxAge: 0,
-          httpOnly: true,
-      });
-      return res.status(200).json({
-          success: true,
-          message: 'User logged out successfully',
-      });
+    res.cookie("token", null, {
+      secure: true,
+      maxAge: 0,
+      httpOnly: true,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
   } catch (e) {
-      return next(new AppError(e.message, 500));
+    return next(new AppError(e.message, 500));
   }
-}
-
+};
 
 const getProfile = async (req, res, next) => {
   try {
