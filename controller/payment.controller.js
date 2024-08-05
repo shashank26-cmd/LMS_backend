@@ -111,11 +111,11 @@ const verifySubscription = async (req, res, next) => {
       .update(`${razorpay_payment_id}|${subscriptionID}`)
       .digest("hex");
 
-      // if(generatedSignature !== razorpay_signature){
-      //   return next(
-      //     new AppError('Payment not verified,please try again',500)
-      //   )
-      // }
+      if(generatedSignature !== razorpay_signature){
+        return next(
+          new AppError('Payment not verified,please try again',500)
+        )
+      }
       // console.log("this is signature consle",generatedSignature,process.env.razorpay_signature)
 
     await Payment.create({
