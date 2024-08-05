@@ -7,18 +7,17 @@ import sendEmail from "../utils/sendEmail.js";
 import crypto from "crypto";
 
 const cookieOptions = {
-  maxAge: 7 * 24 * 60 * 60 * 1000, // Fixed a typo here (added an extra '0')
-  httpOnly: true,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  httpOnly: true, // U can do nothing with the help of js from client
   secure: true,
 };
 
 const register = async (req, res, next) => {
   try {
     // Destructuring the necessary data from req object
-    console.log(req.body);
     const { fullName, email, password } = req.body;
 
-    // Check if the data is there or not, if not throw error message
+    // Check if the data is there or not, if not throw error message next will help to go  in errormiddleware route and from there the err will be send to user.
     if (!fullName || !email || !password) {
       return next(new AppError("All fields are required", 400));
     }
@@ -32,6 +31,10 @@ const register = async (req, res, next) => {
     }
 
     // Create new user with the given necessary data and save to DB
+
+    //This is two step process
+    // 1-Create and save basic info of user name,email,password
+    //2-Upload profile on third party(Cloudinary) and then save..
     const user = await User.create({
       fullName,
       email,
@@ -50,7 +53,8 @@ const register = async (req, res, next) => {
     }
 
     // Run only if user sends a file
-    console.log("FILE details >", JSON.stringify(req.file));
+    //  Client will send data in form and image will come in binary form in server
+    //Multer will convert binary into image and save it into server temporary and then upload to cloudinary and delete image from server
     if (req.file) {
       try {
         console.log("starting img upload to cloudinary");
@@ -99,7 +103,7 @@ const register = async (req, res, next) => {
   } catch (err) {
     return res.status(500).send({ error: err.message });
   }
-}
+};
 
 const login = async (req, res, next) => {
   try {
@@ -129,25 +133,24 @@ const login = async (req, res, next) => {
 
 const logout = (req, res, next) => {
   try {
-      res.cookie('token', null, {
-          secure: true,
-          maxAge: 0,
-          httpOnly: true,
-      });
-      return res.status(200).json({
-          success: true,
-          message: 'User logged out successfully',
-      });
+    res.cookie("token", null, {
+      secure: true,
+      maxAge: 0,
+      httpOnly: true,
+    });
+    return res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
   } catch (e) {
-      return next(new AppError(e.message, 500));
+    return next(new AppError(e.message, 500));
   }
-}
-
+};
 
 const getProfile = async (req, res, next) => {
   try {
     const userId = req.user.id; // this we will  get from auth middleware
-    const user = await User.findById(userId); // Changed from findOne
+    const user = await User.findById(userId);
     res.status(200).json({
       success: true,
       message: "User details",
@@ -181,19 +184,9 @@ const forgotPassword = async (req, res, next) => {
 
   // Generating the reset token via the method we have in user model
   const resetToken = await user.generatePasswordResetToken();
-  console.log(resetToken);
   // Saving the forgotPassword* to DB
   await user.save();
 
-  // constructing a url to send the correct data
-  /**HERE
-   * req.protocol will send if http or https
-   * req.get('host') will get the hostname
-   * the rest is the route that we will create to verify if token is correct or not
-   */
-  // const resetPasswordUrl = `${req.protocol}://${req.get( eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MjZiZTQ2OWVjNThkY2Q1ZDI4MGNmMCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjk3MDM3OTM0LCJleHAiOjE2OTcwNDE1MzR9.9UiJGMZ6KdO8eFQV8MXVrZaEDcI5xVkLbdCbKk6a8nA
-  //   "host"
-  // )}/api/v1/user/reset/${resetToken}`;
   const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
   console.log(resetPasswordUrl);
   // navigator.clipboard.write(resetPasswordUrl);
@@ -282,7 +275,7 @@ const changePassword = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   const { fullName } = req.body;
   const { id } = req.params;
-console.log( "this is checking console ",id,fullName);
+  console.log("this is checking console ", id, fullName);
   const user = await User.findById(id);
   if (!user) {
     return next(new AppError("User does not exist", 402));

@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 80 * 1024 * 1024 }, // 80 MB max size
+  limits: { fileSize: 80 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     if ([".jpg", ".jpeg", ".png", ".webp", ".mp4"].includes(ext)) {

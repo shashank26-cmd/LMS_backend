@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 
 const router = Router();
 
@@ -10,69 +10,39 @@ import {
   getLecturesByCourseId,
   removeLectureFromCourse,
   updateCourseById,
-} from '../controller/course.controller.js';
+} from "../controller/course.controller.js";
 import {
   authorizeRoles,
   isLoggedIn,
-  authorizeSubscribers
-} from '../middleware/auth.middleware.js';
-import upload from '../middleware/multer.middleware.js';
-
-
-// , isLoggedIn, authorizeRoles("ADMIN", "USER") - middlewares
-
-// OLD Code
-// router.get("/", getAllCourses);
-// router.post("/", isLoggedIn, authorizeRoles("ADMIN"), createCourse);
-// router.delete(
-//   "/",
-//   isLoggedIn,
-//   authorizeRoles("ADMIN"),
-//   removeLectureFromCourse
-// );
-// router.get("/:id", isLoggedIn, getLecturesByCourseId);
-// router.post(
-//   "/:id",
-//   isLoggedIn,
-//   authorizeRoles("ADMIN"),
-//   upload.single("lecture"),
-//   addLectureToCourseById
-// );
-// router.delete("/:id", isLoggedIn, authorizeRoles("ADMIN"), deleteCourseById);
-
-// Refactored code
-// router.post('/create', isLoggedIn, authorizeRoles('ADMIN'), upload.single('thumbnail'), createCourse);
+  authorizeSubscribers,
+} from "../middleware/auth.middleware.js";
+import upload from "../middleware/multer.middleware.js";
 
 router
-  .route('/')
+  .route("/")
   .get(getAllCourses)
   .post(
     isLoggedIn,
-    authorizeRoles('ADMIN'),
-    upload.single('thumbnail'),
+    authorizeRoles("ADMIN"),
+    upload.single("thumbnail"),
 
     createCourse
-  )//    upload.single('thumbnail'),
+  )
 
-  .delete(isLoggedIn, authorizeRoles('ADMIN'), removeLectureFromCourse);
+  .delete(isLoggedIn, authorizeRoles("ADMIN"), removeLectureFromCourse);
 
 router
-  .route('/:id')
+  .route("/:id")
   .get(isLoggedIn, authorizeSubscribers, getLecturesByCourseId) // Added authorizeSubscribers to check if user is admin or subscribed if not then forbid the access to the lectures
   .post(
     isLoggedIn,
-    authorizeRoles('ADMIN'),
-    upload.single('lecture'),
+    authorizeRoles("ADMIN"),
+    upload.single("lecture"),
 
     addLectureToCourseById
-  )//    upload.single('lecture'),
-
-  .put(isLoggedIn, authorizeRoles('ADMIN'), updateCourseById)
-  .delete(
-    isLoggedIn,
-    authorizeRoles('ADMIN'),
-    deleteCourseById
-
   )
+
+  .put(isLoggedIn, authorizeRoles("ADMIN"), updateCourseById)
+  .delete(isLoggedIn, authorizeRoles("ADMIN"), deleteCourseById);
 
 export default router;

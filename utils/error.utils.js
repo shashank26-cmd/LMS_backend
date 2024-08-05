@@ -1,8 +1,9 @@
-class AppError extends Error { // agar app mai koi error ati hai toh usko extennd karna chahte hai normal error ke upar
+//This is instance of err this made to reduce the effort of writing again and again err json..
+class AppError extends Error { 
 constructor(message,statusCode){
     
-    super(message); //message pass to errorObject taki enrich hojaye
-    this.statusCode=statusCode; // status code enrich
+    super(message); 
+    this.statusCode=statusCode;
     Error.captureStackTrace(this,this.constructor) //(context,current controller) on which line error is there
 }
 }

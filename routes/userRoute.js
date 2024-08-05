@@ -14,6 +14,7 @@ import upload from "../middleware/multer.middleware.js";
 
 const router = Router();
 
+//.single means single file there is also option to upload multiple files 
 router.post("/register", upload.single("avatar"),register);
 router.post("/login", login);
 router.get("/logout", logout);

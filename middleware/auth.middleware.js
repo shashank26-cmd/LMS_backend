@@ -3,10 +3,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
 const isLoggedIn = async (req, res, next) => {
-  const { token } = req.cookies;
-
-
-  console.log("login" + token);
+  const { token } = req.cookies; //We have used cookieParser in app.js thats why i can abstract token from cookies.
 
   if (!token) {
     console.log("No token found");

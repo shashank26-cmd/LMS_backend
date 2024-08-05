@@ -6,24 +6,24 @@ import Payment from "../models/payment.model.js";
 import crypto from "crypto";
 config();
 
-//this will call when we initate payment to take razorpay key and from this we will make subscription id;
+//We need razorpay key at various places that's why this api
 const getRazorpayApiKey = async (req, res, next) => {
   try {
     res.status(200).json({
       success: true,
       message: "Razarpay API key",
-      key_id: process.env.RAZORPAY_KEY_ID, //this i am changing from key_id to key
+      key_id: process.env.RAZORPAY_KEY_ID,
     });
   } catch (e) {
     return next(new AppError(e.message, 500));
   }
 };
 
-//this will return subscription id  and yeh id ke regarding hum  payement initiate karenge..
+//this will return subscription id  and this id will initiate payment..
 const buyScription = async (req, res, next) => {
   try {
     const { id } = req.user;
-
+ 
     // Validate user ID
     if (!id) {
       return next(new AppError("User ID is missing", 400));
@@ -47,18 +47,12 @@ const buyScription = async (req, res, next) => {
       return next(new AppError("Razorpay Plan ID is not configured", 500));
     }
 
-    // Define subscription options
 
-    //i have commented this on 6 august
-    // const subscriptionOptions = {
-    //   plan_id: process.env.RAZORPAY_PLAN_ID,
-    //   total_count: 12,
-    // };
 
-    // Create a subscription using Razorpay instacne made in index.js
+    // Create a subscription using Razorpay instacne made in index.js and when u create subscription id u can redirect to razorpay where u want to do payment and all ;
     const subscription = await razorpay.subscriptions.create({
       plan_id: process.env.RAZORPAY_PLAN_ID,
-      customer_notify: 1, //subscription ban gaya hai user ko notify payement karna hai toh kardo
+      customer_notify: 1, //To notify User 
       total_count: 12,
     });
 
@@ -81,7 +75,6 @@ const buyScription = async (req, res, next) => {
 
 //once payement done then to verify we need this api we send some info and see payment hua ki nhi
 
-//can apply cupon code and make off by help of plan id;
 const verifySubscription = async (req, res, next) => {
   try {
     const { id } = req.user;
@@ -116,14 +109,13 @@ const verifySubscription = async (req, res, next) => {
           new AppError('Payment not verified,please try again',500)
         )
       }
-      // console.log("this is signature consle",generatedSignature,process.env.razorpay_signature)
 
     await Payment.create({
       razorpay_payment_id,
       razorpay_signature,
       razorpay_subscription_id,
     });
-    user.subscription.status = "active"; // user ke level pe jake active and then set data at db
+    user.subscription.status = "active";
     await user.save();
 
     res.status(200).json({

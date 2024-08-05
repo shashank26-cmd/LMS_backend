@@ -5,17 +5,16 @@ import connectionToDB from "./config/db.js";
 import { config } from "dotenv";
 config();
 
-// Cloudinary configuration
+//Configuration step is essential for  setting up the connection between your application and your Cloudinary account
 cloudinary.config({
-  cloud_name:"shashankm",
-  api_key:"442858572351394",
-  api_secret:"CC8E_16jLJSBokJYNdWZbmJMhA4",
+  cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:process.env.CLOUDINARY_API_KEY,
+  api_secret:process.env.CLOUDINARY_API_SECRET,
 });
 
 export const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_SECRET,
-  // plan_id:process.env.RAZORPAY_PLAN_ID
 });
 
 const PORT = process.env.PORT || 3000;
