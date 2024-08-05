@@ -6,7 +6,7 @@ import Payment from "../models/payment.model.js";
 import crypto from "crypto";
 config();
 
-//We need razorpay key at various places that's why this api
+// On the client side, we need an SDK for React that can display the Razorpay gateway. An important thing it that is the Razorpay key.
 const getRazorpayApiKey = async (req, res, next) => {
   try {
     res.status(200).json({
