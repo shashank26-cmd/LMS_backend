@@ -5,20 +5,21 @@ import User from "../models/userModel.js";
 import Payment from "../models/payment.model.js";
 import crypto from "crypto";
 config();
+
+//this will call when we initate payment to take razorpay key and from this we will make subscription id;
 const getRazorpayApiKey = async (req, res, next) => {
   try {
     res.status(200).json({
       success: true,
       message: "Razarpay API key",
-      key_id: process.env.RAZORPAY_KEY_ID,
+      key_id: process.env.RAZORPAY_KEY_ID, //this i am changing from key_id to key
     });
   } catch (e) {
     return next(new AppError(e.message, 500));
   }
 };
 
-// ... (Other imports and configurations)
-
+//this will return subscription id  and yeh id ke regarding hum  payement initiate karenge..
 const buyScription = async (req, res, next) => {
   try {
     const { id } = req.user;
@@ -47,15 +48,19 @@ const buyScription = async (req, res, next) => {
     }
 
     // Define subscription options
-    const subscriptionOptions = {
-      plan_id: process.env.RAZORPAY_PLAN_ID,
-      total_count: 12,
-    };
 
-    // Create a subscription using Razorpay
-    const subscription = await razorpay.subscriptions.create(
-      subscriptionOptions
-    );
+    //i have commented this on 6 august
+    // const subscriptionOptions = {
+    //   plan_id: process.env.RAZORPAY_PLAN_ID,
+    //   total_count: 12,
+    // };
+
+    // Create a subscription using Razorpay instacne made in index.js
+    const subscription = await razorpay.subscriptions.create({
+      plan_id: process.env.RAZORPAY_PLAN_ID,
+      customer_notify: 1, //subscription ban gaya hai user ko notify payement karna hai toh kardo
+      total_count: 12,
+    });
 
     // Update user's subscription details
     user.subscription.id = subscription.id;
@@ -74,69 +79,89 @@ const buyScription = async (req, res, next) => {
   }
 };
 
+//once payement done then to verify we need this api we send some info and see payment hua ki nhi
+
+//can apply cupon code and make off by help of plan id;
 const verifySubscription = async (req, res, next) => {
   try {
-      const { id } = req.user;
-      const { razorpay_payment_id, razorpay_subscription_id, razorpay_signature } = req.body;
-      console.log("this  is verify console",razorpay_payment_id,razorpay_signature,razorpay_subscription_id);
-      const user = await User.findById({ _id: id });
-      if (!user) {
-          return next(new AppError('User is not exist...Please login', 402));
-      }
-      const subscriptionID = user.subscription.id;
-      if (!subscriptionID) {
-          return next(new AppError('User Subscription ID not found...', 402));
-      }
-      const generatedSignature = crypto
-          .createHash('sha256', process.env.RAZORPAY_SECRET)
-          .update(`${razorpay_payment_id}|${subscriptionID}`)
-          .digest('hex');
+    const { id } = req.user;
+    const {
+      razorpay_payment_id,
+      razorpay_signature,
+      razorpay_subscription_id,
+    } = req.body;
+    console.log(
+      "this  is verify console",
+      razorpay_payment_id,
+      razorpay_signature,
+      razorpay_subscription_id
+    );
+    const user = await User.findById({_id:id});
+    if (!user) {
+      return next(new AppError("User is not exist...Please login", 402));
+    }
+    const subscriptionID = user.subscription.id;
+    if (!subscriptionID) {
+      return next(new AppError("User Subscription ID not found...", 402));
+    }
 
-      await Payment.create({
-          razorpay_payment_id,
-          razorpay_subscription_id,
-          razorpay_signature,
-      });
-      user.subscription.status = 'active';
-      await user.save();
 
-      res.status(200).json({
-          success: true,
-          message: 'Payment Verified successfully...',
-      })
+    const generatedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_SECRET)  //was using createhash before and now using createhmac lets see...
+      .update(`${razorpay_payment_id}|${subscriptionID}`)
+      .digest("hex");
+
+      // if(generatedSignature !== razorpay_signature){
+      //   return next(
+      //     new AppError('Payment not verified,please try again',500)
+      //   )
+      // }
+      // console.log("this is signature consle",generatedSignature,process.env.razorpay_signature)
+
+    await Payment.create({
+      razorpay_payment_id,
+      razorpay_signature,
+      razorpay_subscription_id,
+    });
+    user.subscription.status = "active"; // user ke level pe jake active and then set data at db
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment Verified successfully...",
+    });
   } catch (e) {
-      return next(new AppError(e.message, 500));
+    return next(new AppError(e.message, 500));
   }
-}
+};
 
 const cancelSubscription = async (req, res, next) => {
   try {
-      const { id } = req.user;
-      const user = await User.findById({ _id: id });
+    const { id } = req.user;
+    const user = await User.findById({ _id: id });
 
-      if (!user) {
-          return next(new AppError('User is not exist...Please login', 402));
-      }
+    if (!user) {
+      return next(new AppError("User is not exist...Please login", 402));
+    }
 
-      if(user.role === 'ADMIN'){
-          return next(new AppError('Admin cannot purchase a subscription', 403));
-      }
+    if (user.role === "ADMIN") {
+      return next(new AppError("Admin cannot purchase a subscription", 403));
+    }
 
-      const subscriptionID = user.subscription.id;
-      const subscription = razorpay.subscriptions.cancel(subscriptionID);
+    const subscriptionID = user.subscription.id;
+    const subscription = await razorpay.subscriptions.cancel(subscriptionID);
 
-      user.subscription.status = subscription.status;
+    user.subscription.status = subscription.status;
 
-      await user.save();
-      res.status(200).json({
-          success: true,
-          message:'Remove subscription successfully...',
-      });
-
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: "Remove subscription successfully...",
+    });
   } catch (e) {
-      return next(new AppError(e.message, 500));
+    return next(new AppError(e.message, 500));
   }
-}
+};
 const allPayments = async (req, res, _next) => {
   const { count, skip } = req.query;
 

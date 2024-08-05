@@ -41,7 +41,7 @@ default:'USER' // if nothing given byDefault user.
 },
 forgetPasswordToken:String,
 forgetPasswordExpiry:Date,
-subscription:{
+subscription:{ //Subscription details verify 
     id:String,
     status:String
 }
